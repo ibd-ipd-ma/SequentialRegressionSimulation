@@ -6,4 +6,4 @@ It includes files used to aggregate and harmonize individual participant data fr
 
 # Requirements
 
-Programming was performed in the R language, using the packages dplyr, lme4, lmerTest, data.table, ggplot2, ggpubr, sjstats, patchwork, and gridExtra.
+Programming was performed in the R language (4.2.2), using the packages dplyr, lme4, lmerTest, data.table, ggplot2, ggpubr, sjstats, patchwork, and gridExtra.
