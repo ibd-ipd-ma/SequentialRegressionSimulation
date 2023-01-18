@@ -9,13 +9,11 @@
 
 ############################################################################################
 
-
 library(tidyverse)  # For general data processing
 library(lme4)       # Mixed effect modeling
-# install.packages('lmerTest')
 library(lmerTest)   # Mixed effect model p-values
-library(caret)
-library(ggplot2)    # Plotting
+library(caret)      # RMSE calculation
+library(ggplot2)    # Plots
 library(gridExtra)  # Subplots
 library(sjPlot)     # Publication ready tables
 library(ggpubr)     # Publication ready figures
@@ -24,7 +22,7 @@ library(sjstats)    # ICC, R2
 #####################################################################################################
 
 # use data 'crohnsData_wk8_imputed': all missing values are imputed, all categorical variables are numerical encoded, all numerical variables are centered
-crohnsData <- read_csv(file='G:/Shan/Week 8 Identification/CombinedTrials/crohnsData_wk8_imputed.csv')
+crohnsData <- read_csv(file='~/Week 8 Identification/CombinedTrials/crohnsData_wk8_imputed.csv')
 crohnsData %>% colnames()
 
 # use data from all placebo cohorts to train the model
@@ -65,11 +63,6 @@ summary(fm)
 summary(mm)
 ranef(mm)
 
-# Save models 
-PATH = 'G:/Shan/Week 8 Identification/Export Jun23/Paper 1 Week 8/Objects/'
-sink(paste(PATH,'m1_plac_fix_readable.txt',sep='')); print(summary(fm)); sink()
-sink(paste(PATH,'m1_plac_mix_readable.txt',sep='')); print(summary(mm)); sink()
-
 #####################################################################################################
 
 # Fixed vs Mixed model output
@@ -83,7 +76,7 @@ tab_model(fm, mm,
 
 #####################################################################################################
 
-## Leave One Out (LOO) Analysis
+## Leave One Out (LOO) Analysis (LeaveOneOutTruePredResults.csv)
 
 set.seed(8)
 
@@ -120,10 +113,6 @@ loo_results <- placebo_df %>%
             true.cdai_red.se   = sd(CDAI_REDUCTION)) %>% 
   full_join(trial_pred_info, by='TRIAL')
 loo_results
-
-# write.csv(loo_results,
-#           file='G:/Shan/Week 8 Identification/Tables/LeaveOneOutTruePredResults.csv',
-#           row.names=FALSE)
 
 #####################################################################################################
 

@@ -36,9 +36,11 @@
 # * WEEK 12 = WEEK 8_EXT
 # * WEEK 16 = WEEK 12_EXT
 
+################################################################################
+
 library(haven); library(data.table); library(magrittr); library(tidyverse)
 
-###########################################################################################################
+################################################################################
 
 ## Create dataframe with selected participants and week of visit
 
@@ -61,7 +63,7 @@ TRIAL_OUT <- TRIAL_OUT %>%
 
 TRIAL_OUT %>% head()
 
-###########################################################################################################
+################################################################################
 
 ## CDAI Values
 
@@ -72,9 +74,9 @@ TRIAL_OUT %>% head()
 cdai <- read_sas(paste0(PATH,'deid_cdaicdai.sas7bdat')) %>%
   filter(QTXT== "Total") %>%
   mutate(CPEVENT = if_else(CPEVENT=='WEEK 2_EXT','WEEK 6',
-                   if_else(CPEVENT=='WEEK 4_EXT','WEEK 8',
-                   if_else(CPEVENT=='WEEK 8_EXT','WEEK 12',
-                   if_else(CPEVENT=='WEEK 12_EXT','WEEK16', CPEVENT))))) %>%
+                           if_else(CPEVENT=='WEEK 4_EXT','WEEK 8',
+                                   if_else(CPEVENT=='WEEK 8_EXT','WEEK 12',
+                                           if_else(CPEVENT=='WEEK 12_EXT','WEEK16', CPEVENT))))) %>%
   # filter included visits (all letters to upper cases, remove white space) - to match visits vector
   mutate(VISIT = gsub('\\s+','',toupper(CPEVENT))) %>%
   filter(VISIT %in% visits) %>%
@@ -106,14 +108,14 @@ TRIAL_OUT <- left_join(TRIAL_OUT, cdai) %>%
 # 
 # dim(TRIAL_OUT) # 73
 
-###########################################################################################################
+################################################################################
 
 # missingness per trt group
 TRIAL_OUT %>% group_by(TRTGRP) %>% select(TRTGRP, CDAI_BASELINE:CDAI_WEEK16) %>% 
   summarise_each(funs(sum(is.na(.))))
 # 6 missing from week 8 (LVCF from week 6, week 4, week 2, or week 1)
 
-###########################################################################################################
+################################################################################
 
 ## Baseline Covariates
 
@@ -167,7 +169,7 @@ TRIAL_OUT <- read_sas(paste0(PATH, 'deid_chemchem.sas7bdat')) %>%
   left_join(TRIAL_OUT,.)
 # full list of steroids:
 # read_sas(paste0(PATH, 'deid_cmedcmed.sas7bdat')) %>% filter(MED %like% ster) %>% distinct(MED)
-	
+
 
 ## HX.TNFi
 tnf <- 'ADALIMUMAB|INFLIXIMAB|CERTOLIZUMAB'
@@ -178,7 +180,7 @@ TRIAL_OUT <- read_sas(paste0(PATH, 'deid_cmedcmed.sas7bdat')) %>%
   summarise(HxOfTNFi = max(temp)) %>% 
   ungroup() %>% 
   left_join(TRIAL_OUT,.)
-  
+
 
 ## CRP
 TRIAL_OUT <- read_sas(paste0(PATH,'deid_normlab2.sas7bdat')) %>%
@@ -232,7 +234,7 @@ TRIAL_OUT <- read_sas(paste0(PATH,'deid_medhmedh.sas7bdat')) %>%
 
 dim(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 ## Arrange Final Dataframe
 
@@ -240,7 +242,7 @@ additional_vars <- c(
   RACE = NA_character_, ETHNIC = NA_character_, HEIGHT..cm = NA_real_, WEIGHT..kg = NA_real_, 
   LOC.COLON = NA_character_, DURATION = NA_real_, SMOKING = NA_character_, ALBUMIN..gL = NA_real_, 
   CURR.FISTULA = NA_character_, PERIANAL = NA_character_, CURR.PRIOR.STRICTURE = NA_character_
-  )
+)
 
 # add trial identifiers and missing columns
 TRIAL_OUT <- TRIAL_OUT %>%

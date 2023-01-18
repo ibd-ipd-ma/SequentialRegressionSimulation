@@ -6,7 +6,7 @@
 #             current fistula; perianal; current prior stricture. 
 
 
-###########################################################################################################
+################################################################################
 
 ## Study ENCORE(NCT00078611)
 
@@ -21,10 +21,11 @@
 # c7smokih  - SMOKQUAN (SMOKING)
 # c7cdaics/c7dhist - date difference (DURATION)
 
+################################################################################
 
 library(haven); library(data.table); library(magrittr); library(tidyverse); library(data.table)
 
-###########################################################################################################
+################################################################################
 
 ## Create dataframe with selected participants and week of visit
 PATH = 'G:/Source Data/NCT00078611/ct-2019-093_cd307_data/'
@@ -44,7 +45,7 @@ TRIAL_OUT <- left_join(TRIAL_OUT, participants) %>%
 
 TRIAL_OUT %>% head()
 
-###########################################################################################################
+################################################################################
 
 ## CDAI Values
 
@@ -87,13 +88,13 @@ dim(TRIAL_OUT)
 # 
 # dim(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 # missingness per trt group
 TRIAL_OUT %>% group_by(TRTGRP) %>% select(TRTGRP, CDAI_BASELINE:CDAI_WEEK16) %>% 
   summarise_each(funs(sum(is.na(.))))
 
-###########################################################################################################
+################################################################################
 
 ## Baseline Covariates 
 
@@ -200,7 +201,7 @@ TRIAL_OUT <- read.csv(paste0(PATH,'c7smokih.csv')) %>%
 
 dim(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 ## Arrange Final Dataframe
 
@@ -208,7 +209,7 @@ additional_vars <- c(
   RACE = NA_character_, ETHNIC = NA_character_, HEIGHT..cm = NA_real_, WEIGHT..kg = NA_real_, 
   LOC.COLON = NA_character_, DURATION = NA_real_, SMOKING = NA_character_, ALBUMIN..gL = NA_real_, 
   CURR.FISTULA = NA_character_, PERIANAL = NA_character_, CURR.PRIOR.STRICTURE = NA_character_
-  )
+)
 
 # add trial identifiers and missing columns
 TRIAL_OUT <- TRIAL_OUT %>%
@@ -228,11 +229,11 @@ TRIAL_OUT <- TRIAL_OUT %>%
 
 view(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 ## Save
 
 write.csv(TRIAL_OUT, 'G:/Shan/Week 8 Identification/ENCORE_MASTER.csv', row.names = F)
 
-###########################################################################################################
+################################################################################
 

@@ -8,7 +8,7 @@
 # Outputs:
 # *Extended Data Figure 5: Model Assumptions
 
-############################################################################################
+################################################################################
 
 library(tidyverse)
 library(lme4)
@@ -16,7 +16,7 @@ library(ggplot2)
 library(ggpubr)
 library(patchwork)
 
-#####################################################################################################
+################################################################################
 
 # N = 1310
 placebo_df <- read.csv(file = "G:/Shan/Week 8 Identification/CombinedTrials/crohnsData_wk8_imputed.csv") %>% 
@@ -28,7 +28,7 @@ rm <- readRDS(file='G:/All Analysis/Vignesh/Export/Paper 1 Week 8/Objects/placeb
 placebo_df$resid <- resid(rm)
 placebo_df$fitted <- fitted(rm)
 
-#####################################################################################################
+################################################################################
 
 norm.check <- data.frame(index = 1:1310,
                          resid = resid(rm),

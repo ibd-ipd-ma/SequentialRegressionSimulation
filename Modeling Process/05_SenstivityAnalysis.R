@@ -10,10 +10,9 @@
 
 library(tidyverse)  # For general data processing
 library(lme4)       # Mixed effect modeling
-# install.packages('lmerTest')
 library(lmerTest)   # Mixed effect model p-values
 
-#####################################################################################################
+################################################################################
 
 ## Remission Rate Function
 
@@ -72,7 +71,7 @@ RemissionRateSummaryTable <- function(crohnsData, covariate_list){
   return(rem_summary)
 }
 
-####################################################################################################
+################################################################################
 
 ## Missingness Heatmap
 
@@ -100,7 +99,7 @@ ggplot(miss_data, aes(x = TRIAL, y = variable, fill = pct_miss)) +
         axis.title.y = element_blank()) + 
   coord_flip()
 
-#####################################################################################################
+################################################################################
 
 ## Sensitivity Analysis - Test
 
@@ -111,7 +110,7 @@ covariate_list <- c('YEAR_CENT','CDAI_BASELINE_CENT','AGE_CENT','BMI_CENT','CRP.
 
 RemissionRateSummaryTable(crohnsData, covariate_list)
 
-#####################################################################################################
+################################################################################
 
 ## Sensitivity Analysis - Remove PRECISE1, ENACT
 
@@ -135,7 +134,7 @@ rem_rates
 
 fisher.test(rem_rates)
 
-#####################################################################################################
+################################################################################
 
 ## Sensitivity Analysis - Removing Missing Week8 CDAI Participants
 
@@ -161,7 +160,7 @@ rem_rates
 
 fisher.test(rem_rates)
 
-#####################################################################################################
+################################################################################
 
 ## Information Leakage - Removing UST trials from placebo attributable model
 
@@ -223,7 +222,7 @@ ADA_summary <- UST_placebo %>%
 rem_summary <- rbind(UST_summary, ADA_summary)
 rem_summary
 
-#####################################################################################################
+################################################################################
 
 ## Negative Control
 

@@ -6,7 +6,7 @@
 #             current fistula; perianal; current prior stricture. 
 
 
-###########################################################################################################
+################################################################################
 
 ## Study CERTIFI (NCT00771667)
 
@@ -27,9 +27,11 @@
 # * 3 = Ustekinumab 3 mg/kg (Not FDA approval dose; don't include)
 # * 4 = Ustekinumab 6 mg/kg (FDA DOSE)
 
+################################################################################
+
 library(haven); library(data.table); library(magrittr); library(tidyverse)
 
-###########################################################################################################
+################################################################################
 
 ## Create dataframe with selected participants and week of visit
 
@@ -52,11 +54,12 @@ TRIAL_OUT <- left_join(TRIAL_OUT, participants) %>%
 
 TRIAL_OUT %>% head()
 
-###########################################################################################################
+################################################################################
 
 ## CDAI Values
 # Remove participants if baseline is NA, or WEEK1:WEEK8 are all NA.
-# Extract CDAI and CDAIL (Last Observation Carried Forward (LVCF)) values for each participant in cohorts ACTARM placebo or active
+# Extract CDAI and CDAIL (Last Observation Carried Forward (LVCF)) values for 
+#   each participant in cohorts ACTARM placebo or active
 # Pivot longer to create a single record per patient. 
 
 
@@ -77,28 +80,14 @@ TRIAL_OUT <- left_join(TRIAL_OUT, cdai) %>%
   pivot_wider( names_from = VISIT, values_from = c(CDAI, CDAIL) )
 dim(TRIAL_OUT)
 
-# # find participants where WEEK1:WEEK8 are all NA
-# id_na <- TRIAL_OUT %>%
-#   select(DUSUBJID, CDAI_WEEK2, CDAI_WEEK4, CDAI_WEEK6, CDAI_WEEK8) %>%
-#   filter_at(vars(-DUSUBJID), ~is.na(.)) %>%
-#   select(DUSUBJID)
-# 
-# # remove participant if baseline cdai is NA or WEEK1:WEEK8 are all NA
-# TRIAL_OUT <- TRIAL_OUT %>%
-#   filter(is.na(CDAI_BASELINE)) %>%
-#   anti_join(., id_na)
-# # N removed = 11
-# 
-# dim(TRIAL_OUT)
-
-###########################################################################################################
+################################################################################
 
 # missingness by TRTGRP
 TRIAL_OUT %>% group_by(TRTGRP) %>% select(TRTGRP, CDAI_BASELINE:CDAI_WEEK8) %>% 
   summarise(across(everything(), ~sum(is.na(.))))
 # 10 missing from week 8
 
-###########################################################################################################
+################################################################################
 
 ## Baseline Covariates
 
@@ -106,8 +95,8 @@ TRIAL_OUT %>% group_by(TRTGRP) %>% select(TRTGRP, CDAI_BASELINE:CDAI_WEEK8) %>%
 ## AGE, SEX, RACE
 TRIAL_OUT <- read_xpt(paste0(PATH, 'demo.xpt')) %>% 
   mutate(RACE = if_else(RACE=='Caucasian', 'WHITE', 
-                if_else(RACE=='Black', 'BLACK', 
-                if_else(RACE=='Asian', 'ASIAN', 'OTHER')))) %>%
+                        if_else(RACE=='Black', 'BLACK', 
+                                if_else(RACE=='Asian', 'ASIAN', 'OTHER')))) %>%
   select(DUSUBJID, AGE, SEX, RACE) %>% 
   left_join(TRIAL_OUT,.)
 
@@ -220,7 +209,7 @@ TRIAL_OUT <- read_xpt(paste0(PATH, 'subjef.xpt')) %>%
 
 dim(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 ## Arrange Final Dataframe
 
@@ -228,7 +217,7 @@ additional_vars <- c(
   RACE = NA_character_, ETHNIC = NA_character_, HEIGHT..cm = NA_real_, WEIGHT..kg = NA_real_, 
   LOC.COLON = NA_character_, DURATION = NA_real_, SMOKING = NA_character_, ALBUMIN..gL = NA_real_, 
   CURR.FISTULA = NA_character_, PERIANAL = NA_character_, CURR.PRIOR.STRICTURE = NA_character_
-  )
+)
 
 # add trial identifiers and missing columns
 TRIAL_OUT <- TRIAL_OUT %>%
@@ -248,11 +237,11 @@ TRIAL_OUT <- TRIAL_OUT %>%
 
 view(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 ## Save
 
 write.csv(TRIAL_OUT, 'G:/Shan/Week 8 Identification/CERTIFI_MASTER.csv', row.names = F)
 
-###########################################################################################################
+################################################################################
 

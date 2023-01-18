@@ -6,7 +6,7 @@
 #             current fistula; perianal; current prior stricture. 
 
 
-###########################################################################################################
+################################################################################
 
 ## Study PRECISE1 (NCT00152490)
 
@@ -27,7 +27,7 @@
 
 library(haven); library(data.table); library(magrittr); library(tidyverse)
 
-###########################################################################################################
+################################################################################
 
 ## Create dataframe with selected participants and week of visit
 
@@ -51,8 +51,7 @@ dim(TRIAL_OUT)
 
 TRIAL_OUT %>% head()
 
-###########################################################################################################
-
+################################################################################
 ## CDAI Values
 
 # Remove participants if baseline is NA, or WEEK1:WEEK8 are all NA.
@@ -77,29 +76,14 @@ TRIAL_OUT <- left_join(TRIAL_OUT, cdai) %>%
 
 dim(TRIAL_OUT)
 
-# # find participants where even weeks btw WEEK2:WEEK8 are NA
-# id_na <- TRIAL_OUT %>%
-#   select(PATNO, CDAI_WEEK2, CDAI_WEEK4, CDAI_WEEK6, CDAI_WEEK8) %>%
-#   filter_at(vars(-PATNO), ~is.na(.)) %>%
-#   select(PATNO)
-# 
-# # remove participant if baseline cdai is NA or 
-# # even weeks btw WEEK2:WEEK8 are NA
-# TRIAL_OUT <- TRIAL_OUT %>%
-#   filter(!is.na(CDAI_BASELINE)) %>%
-#   anti_join(., id_na)
-# # N removed = 60
-# 
-# dim(TRIAL_OUT)
-
-###########################################################################################################
+################################################################################
 
 # missingness per trt group
 TRIAL_OUT %>% group_by(TRTGRP) %>% select(TRTGRP, CDAI_BASELINE:CDAI_WEEK16) %>% 
   summarise_each(funs(sum(is.na(.))))
 # 177 missing from week 8 (LVCF from week 6, week 4, week 2)
 
-###########################################################################################################
+################################################################################
 
 ## Baseline Covariates 
 
@@ -198,7 +182,7 @@ TRIAL_OUT <- read_sas(paste0(PATH,'effcla.sas7bdat')) %>%
 
 dim(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 
 ## Arrange Final Dataframe
@@ -227,11 +211,11 @@ TRIAL_OUT <- TRIAL_OUT %>%
 
 view(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 ## Save
 
 write.csv(TRIAL_OUT, 'G:/Shan/Week 8 Identification/PRECISE1_MASTER.csv', row.names = F)
 
-###########################################################################################################
+################################################################################
 

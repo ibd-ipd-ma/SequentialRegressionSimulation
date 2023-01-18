@@ -7,15 +7,17 @@
 # Outputs:
 # * Extended Table 2:	Model Selection Results for Placebo Effects
 
-############################################################################################
-library(tidyverse)
-library(caret)
-library(lme4)
-library(glmnet)
+################################################################################
+
+library(tidyverse)  # For general data processing
+library(lme4)       # Mixed effect modeling
+library(lmerTest)   # Mixed effect model p-values
+library(caret)      # RMSE calculation
+library(glmnet)     # LASSO regression
 library(randomForest)
 library(xgboost)
 
-#####################################################################################################
+################################################################################
 
 ## Placebo Data
 
@@ -25,7 +27,7 @@ placebo_df <- read_csv(file='G:/Shan/Week 8 Identification/CombinedTrials/crohns
   select(TRIAL, YEAR_CENT, CDAI_BASELINE_CENT, AGE_CENT, BMI_CENT, CRP..mgL_CENT, 
          SEX.MALE, HxOfTNFi, STEROID, IMMUNOMOD, LOC.ILEAL, CDAI_REDUCTION)
 
-#####################################################################################################
+################################################################################
 
 ## Cross Validation Function
 
@@ -100,7 +102,7 @@ myCV <- function(data, folds, k, method, param){
   return(rmse_out)
 }
 
-#####################################################################################################
+################################################################################
 
 ## Linear Regression
 
@@ -110,10 +112,9 @@ lm.results = myCV(data = placebo_df, folds=folds, k=5, method='lm')
 lm.results
 mean(lm.results)
 
-#####################################################################################################
+################################################################################
 
 ## Mixed Effect Linear Regression
-
 
 set.seed(8)
 
@@ -121,12 +122,12 @@ lmer.results = myCV(data = placebo_df, folds=folds, k=5, method='lmer')
 lmer.results
 mean(lmer.results)
 
-#####################################################################################################
+################################################################################
 
 ## Linear LASSO Regression
 
-
 set.seed(8)
+
 bstGlm <- cv.glmnet(x=data.matrix(placebo_df[,2:11]), y=data.matrix(placebo_df[,12]), alpha=1)
 param = expand.grid(lambda=bstGlm$lambda.min)
 
@@ -134,7 +135,7 @@ lasso.results = myCV(data = placebo_df, folds=folds, k=5, method='lasso', param=
 lasso.results
 mean(lasso.results)
 
-#####################################################################################################
+################################################################################
 
 ## Random Forest
 
@@ -144,7 +145,7 @@ rf.results = myCV(data = placebo_df, folds=folds, k=5, method='rf')
 rf.results
 mean(rf.results)
 
-#####################################################################################################
+################################################################################
 
 ## XGBoost (DART)
 
@@ -161,5 +162,5 @@ xgb.results = myCV(data = placebo_df, folds=folds, k=5, method='xgboost', param=
 xgb.results
 mean(xgb.results)
 
-#####################################################################################################
+################################################################################
 

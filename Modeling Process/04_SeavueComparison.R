@@ -10,20 +10,18 @@
 # * Table 1- UST active vs UST placebo (ADA simulated) Baseline Characteristics 
 
 
-#####################################################################################################
+################################################################################
+
 library(tidyverse)  # For general data processing
 library(lme4)       # Mixed effect modeling
-# install.packages('lmerTest')
 library(lmerTest)   # Mixed effect model p-values
-library(caret)
 library(ggplot2)    # Plotting
 library(gridExtra)  # Subplots
 library(sjPlot)     # Publication ready tables
 library(ggpubr)     # Publication ready figures
-# install.packages('table1')
-library(table1)
+library(table1)     # table 1
 
-#####################################################################################################
+################################################################################
 
 crohnsData <- read_csv(file='G:/Shan/Week 8 Identification/CombinedTrials/crohnsData_wk8_placebo_imp.csv')
 
@@ -40,7 +38,7 @@ UST <- crohnsData %>% filter(DRUG == 'UST') %>%
 dim(UST %>% filter(TRTGRP=='Placebo'))
 dim(UST %>% filter(TRTGRP=='Active'))
 
-#####################################################################################################
+################################################################################
 
 ## ADA Attributable Model
 
@@ -72,7 +70,7 @@ tab_model(m2_ada,
           dv.labels = c('ADA Attributable (Mixed)'),
           file='G:/Shan/Week 8 Identification/Tables/AdaAttributable.html')
 
-#####################################################################################################
+################################################################################
 
 ## UST Active TNF-Naive: calculate  Remission Rate
 
@@ -115,7 +113,7 @@ ADA_summary <- ADA_active %>%
     CI_high  = RemRate + qt(0.975, df=N_ada)*sqrt((RemRate)*(1-RemRate)/N_ada)
   )
 
-#####################################################################################################
+################################################################################
 
 ## Remission Rates
 
@@ -132,7 +130,7 @@ rem_rates
 
 fisher.test(rem_rates)
 
-#####################################################################################################
+################################################################################
 
 ## Characteristic Tables
 
@@ -192,7 +190,7 @@ table1(~ AGE + SEX.FEMALE + BMI + CDAI_BASELINE + CRP..mgL + HxOfTNFi +
        render.categorical= my.render.cat,
        droplevels = T)
 
-#####################################################################################################
+################################################################################
 
 ## UST Active vs UST Placebo (ADA Simulated) -- TNF-naive
 
@@ -260,4 +258,4 @@ table1(~ AGE + SEX.FEMALE + BMI + CDAI_BASELINE + CRP..mgL + HxOfTNFi +
        render.categorical= my.render.cat,
        droplevels = T)
 
-#####################################################################################################
+################################################################################

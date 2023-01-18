@@ -6,7 +6,7 @@
 #             current fistula; perianal; current prior stricture. 
 
 
-###########################################################################################################
+################################################################################
 
 ## Study EXTEND (NCT00348283)
 
@@ -30,10 +30,11 @@
 # Details for deid_qs (cdai values):
 # Filter QSQID=='10A', CDAI values under QSRN
 
+################################################################################
 
 library(haven); library(data.table); library(magrittr); library(tidyverse); library(data.table)
 
-###########################################################################################################
+################################################################################
 
 ## Create dataframe with selected participants and week of visit
 
@@ -55,7 +56,7 @@ TRIAL_OUT <- TRIAL_OUT %>%
 
 TRIAL_OUT %>% head()
 
-###########################################################################################################
+################################################################################
 
 ## CDAI Values
 
@@ -80,28 +81,13 @@ TRIAL_OUT <- left_join(TRIAL_OUT, cdai) %>%
   # pivot wider -> one record per participant
   pivot_wider( names_from = VISIT, values_from = c(CDAI, CDAIL) )
 
-# # find participants where valid weeks are not all NA
-# id_na <- TRIAL_OUT %>%
-#   select(USUBJID, CDAI_WEEK2, CDAI_WEEK4, CDAI_WEEK6, CDAI_WEEK8) %>%
-#   filter_at(vars(-USUBJID), ~is.na(.)) %>%
-#   select(USUBJID)
-# 
-# # remove participant if baseline cdai is NA or 
-# # even weeks btw WEEK2:WEEK8 are NA
-# TRIAL_OUT <- TRIAL_OUT %>%
-#   filter(!is.na(CDAI_BASELINE)) %>%
-#   anti_join(., id_na)
-# # N removed = 5
-# 
-# dim(TRIAL_OUT) #64
-
-###########################################################################################################
+################################################################################
 
 # missingness per trt group
 TRIAL_OUT %>% group_by(TRTGRP) %>% select(TRTGRP, CDAI_BASELINE:CDAI_WEEK16) %>% 
   summarise(across(everything(), ~sum(is.na(.))))
 
-###########################################################################################################
+################################################################################
 
 ## Baseline Covariates 
 
@@ -110,9 +96,9 @@ TRIAL_OUT %>% group_by(TRTGRP) %>% select(TRTGRP, CDAI_BASELINE:CDAI_WEEK16) %>%
 TRIAL_OUT <- read_sas(paste0(PATH, 'deid_dm.sas7bdat')) %>% 
   # convert RACE=LPC to =ASIAN or =OTHER
   mutate(RACE = if_else(RACECD=='A','ASIAN', 
-                if_else(RACECD=='O','OTHER', 
-                # if missing (M) -> NA
-                if_else(RACECD=='M', NA_character_, RACE)))) %>%
+                        if_else(RACECD=='O','OTHER', 
+                                # if missing (M) -> NA
+                                if_else(RACECD=='M', NA_character_, RACE)))) %>%
   select(USUBJID, AGE, SEX, RACE, ETHNIC) %>% 
   left_join(TRIAL_OUT,.)
 
@@ -213,7 +199,7 @@ TRIAL_OUT <- read_sas(paste0(PATH, 'deid_dc.sas7bdat')) %>%
 
 dim(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 ## Arrange Final Dataframe
 
@@ -221,7 +207,7 @@ additional_vars <- c(
   RACE = NA_character_, ETHNIC = NA_character_, HEIGHT..cm = NA_real_, WEIGHT..kg = NA_real_, 
   LOC.COLON = NA_character_, DURATION = NA_real_, SMOKING = NA_character_, ALBUMIN..gL = NA_real_, 
   CURR.FISTULA = NA_character_, PERIANAL = NA_character_, CURR.PRIOR.STRICTURE = NA_character_
-  )
+)
 
 # add trial identifiers and missing columns
 TRIAL_OUT <- TRIAL_OUT %>%
@@ -241,11 +227,10 @@ TRIAL_OUT <- TRIAL_OUT %>%
 
 view(TRIAL_OUT)
 
-###########################################################################################################
+################################################################################
 
 ## Save
 
 write.csv(TRIAL_OUT, 'G:/Shan/Week 8 Identification/EXTEND_MASTER.csv', row.names = F)
 
-###########################################################################################################
-
+################################################################################

@@ -1,63 +1,134 @@
-# Overview:
-# This file merged nine individual trials together and generated:
+# 01_CombinedTrials.R
 
+################################################################################
+# Overview: This file merged nine individual trials together and generated:
+#
 # * data frame 'crohnsData_MASTER': 
-#   *** it includes variables ('ID','TRIAL','DRUG','SEX','HxOfTNFi','STEROID','IMMUNOMOD','LOC.ILEAL',
-#       'RACE','ETHNIC','LOC.COLON','SMOKING','CURR.FISTULA','PERIANAL','CURR.PRIOR.STRICTURE',
-#       'AGE','BMI','CRP..mgL','HEIGHT..cm','WEIGHT..kg','DURATION','ALBUMIN..gL')
-#   *** missing values in vars (IMMUNOMOD, STEROID, HxOfTNFi, LOC.ILEAL) were imputed with level 'No': 
-#       patients with a record of those variables were defined as level 'Yes'. Missingness means no record found thus No use of those medications. 
-
-# * data frame 'crohnsData_wk8':
-#   *** it excludes all patients that missing baseline cdai or missing all records from week 1 to week 8
-#   *** it includes variables (ID, TRIAL, YEAR, DRUG, TRTGRP,  # identifiers
-#                              AGE, SEX, Sex_Male, BMI, CRP..mgL, HxOfTNFi, STEROID, IMMUNOMOD, LOC.ILEAL,  # main covariates
-#                              CDAI_BASELINE:CDAI_WEEK8, # original data 
-#                              CDAIL_WEEK8,              # week 8 LVCF
-#                              CDAI_REDUCTION,           # week 8 cdai reduction
-#                              RACE, ETHNIC, Race_White, Ethnicity_Hispanic, HEIGHT..cm, WEIGHT..kg, LOC.COLON, DURATION, 
-#                              SMOKING, ALBUMIN..gL, CURR.FISTULA, PERIANAL, CURR.PRIOR.STRICTURE)
+#   *** includes all available Crohn's Disease Activity Index (cdai) data for 
+#       RCTs between weeks 0 (baseline) and 16. 
+#       - ID:                   unique patient id 
+#       - TRTGRP                treatment group (Active or Placebo)
+#       - TRIAL:                trial name   
+#       - DRUG:                 drug administered during trial
+#       - YEAR:
+#       - CDAI_BASELINE:        baseline CDAI
+#       - CDAI_WEEK1            week 1 CDAI
+#       - CDAI_WEEK2
+#       - CDAI_WEEK3
+#       - CDAI_WEEK4
+#       - CDAI_WEEK6
+#       - CDAI_WEEK8
+#       - CDAI_WEEK10
+#       - CDAI_WEEK12
+#       - CDAI_WEEK14
+#       - CDAI_WEEK16           
+#       - AGE:                   
+#       - SEX:
+#       - BMI:                  body mass index (kg/m2) 
+#       - CRP..mgL:             c-reactive protein (lab value) at screening
+#       - HxOfTNFi:             history of Tumor Necrosis Factor-alpha intolerance (TNFi) 
+#       - STEROID:              corticosteroid use  
+#       - IMMUNOMOD:            immunomodulator use
+#       - LOC.ILEAL:            disease location in ileum 
+#       - RACE 
+#       - ETHNIC:               ethnicity 
+#       - HEIGHT..cm:            
+#       - WEIGHT..kg:  
+#       - LOC.COLON:            disease location in colon 
+#       - DURATION:             duration (years) 
+#       - SMOKING:              cigarette smoking, past or current 
+#       - ALBUMIN..gL:          albumin (lab value) at screening
+#       - CURR.FISTULA:         current fistula 
+#       - PERIANAL:             
+#       - CURR.PRIOR.STRICTURE: current or prior stricture 
+# 
+#   *** missing values in vars (IMMUNOMOD, STEROID, HxOfTNFi, LOC.ILEAL) were imputed 
+#       with level 'No'; patients with a record of those variables were defined as 
+#       level 'Yes'. Missingness means no record found thus no use of those medications. 
+#
+#   *** corticosteroids included: CORTICOSTEROIDS|PREDNISOLONE|PREDNISONE|BUDESONIDE|METHYLPREDNISOLONE
+#   *** immunomodulators included: METHOTREXATE|MERCAPTOPURINE|AZATH|6-MP|6MP
+#
+# -----------------------------------------------------------------------------
+#
+# * data frame 'crohnsData_wk8': 
+#   *** Includes last value carried forward (LVCF) week 8 CDAI. It excludes all 
+#       patients that missing baseline cdai or missing all records from week 1 to
+#       week 8. 
+#       - ID:                   unique patient id 
+#       - TRTGRP                treatment group (ACTIVE or PLACEBO)
+#       - TRIAL:                trial name   
+#       - DRUG:                 drug administered during trial
+#       - YEAR:
+#       - CDAI_BASELINE:        baseline CDAI
+#       - CDAI_WEEK1            week 1 CDAI
+#       - CDAI_WEEK2
+#       - CDAI_WEEK3
+#       - CDAI_WEEK4
+#       - CDAI_WEEK6
+#       - CDAI_WEEK8
+#       - CDAIL_WEEK8           last CDAI value carried forward
+#       - AGE:                   
+#       - SEX:
+#       - BMI:                  body mass index (kg/m2) 
+#       - CRP..mgL:             c-reactive protein (lab value) at screening
+#       - HxOfTNFi:             history of Tumor Necrosis Factor-alpha intolerance (TNFi) 
+#       - STEROID:              corticosteroid use  
+#       - IMMUNOMOD:            immunomodulator use
+#       - LOC.ILEAL:            disease location in ileum 
+#       - RACE 
+#       - ETHNIC:               ethnicity 
+#       - HEIGHT..cm:            
+#       - WEIGHT..kg:  
+#       - LOC.COLON:            disease location in colon 
+#       - DURATION:             duration (years) 
+#       - SMOKING:              cigarette smoking, past or current 
+#       - ALBUMIN..gL:          albumin (lab value) at screening
+#       - CURR.FISTULA:         current fistula 
+#       - PERIANAL:             
+#       - CURR.PRIOR.STRICTURE: current or prior stricture 
+#
+# -----------------------------------------------------------------------------
 #
 # * Missing data by trial summary and heatmap 
-
-# * Summary for LVCF observations
-
+#
+# -----------------------------------------------------------------------------
+#
+# * Summary for last value carried forward (LVCF) observations
+#
+# -----------------------------------------------------------------------------
+#
 # * data frame 'crohnsData_wk8_imputed':
-#   *** Outcome variable imputation: 
-#       CDAI_WEEK8 is imputed by LVCF
 #   *** Numerical variables CRP..mgL and BMI missing values are imputed by median of the trial
 #   *** All binary variables are dummy encoded with 0 and 1
 #   *** Created centered numerical variables that are centered by [Var-mean(Var)]
-#   *** Additional coefficients are dropped. Only inlcudes variables for modeling:   
-#                             (ID, TRIAL, DRUG, TRTGRP,                                          # identifiers
-#                              YEAR_CENT, AGE_CENT, BMI_CENT, CRP..mgL_CENT, CDAI_BASELINE_CENT, # centered covariates
-#                              YEAR, AGE, BMI, CRP..mgL, CDAI_BASELINE,                          # original covariates
-#                              SEX, SEX.MALE, HxOfTNFi, STEROID, IMMUNOMOD, LOC.ILEAL,           # categorical covariates
-#                              CDAI_REDUCTION, CDAIL_WEEK8,                                      # Y, week 8 reference
-#                              CDAI_WEEK1:CDAI_WEEK8)                                            # original cdai data
+#   *** Additional coefficients are dropped. Only includes variables for modeling:   
 #
+#       - ID, TRIAL, DRUG, TRTGRP,                                          # identifiers
+#       - YEAR_CENT, AGE_CENT, BMI_CENT, CRP..mgL_CENT, CDAI_BASELINE_CENT, # centered covariates
+#       - YEAR, AGE, BMI, CRP..mgL, CDAI_BASELINE,                          # original covariates
+#       - SEX, SEX.MALE, HxOfTNFi, STEROID, IMMUNOMOD, LOC.ILEAL,           # categorical covariates
+#       - CDAI_REDUCTION, CDAIL_WEEK8,                                      # reduction from week 0 to week 8 (LVCF), week 8 reference
+#       - CDAI_WEEK1:CDAI_WEEK8                                             # original cdai data
+#
+# -----------------------------------------------------------------------------
 #
 # * Table 1 Baseline Characteristics
+#
+# -----------------------------------------------------------------------------
+ 
+library(tidyverse)  # data analysis       
+library(ggplot2)    # plots
+library(naniar)     # miss_var_summary() for easy calculation of number, percent of missing
+library(table1)     # table 1
+library(data.table) # data analysis
 
+################################################################################
 
-
-
-
-library(tidyverse)
-library(ggplot2)
-# install.packages('naniar')
-library(naniar)
-library(sjPlot)
-library(table1)
-library(data.table)
-
-#################################################################################################
-
-# ## Individual study files -> Combined file (MASTER)
-
+## Individual study files -> Combined file (MASTER)
 
 # get a list of all csv files from dir (individual trials)
-dir <- 'G:/Shan/Week 8 Identification/IndividualTrials'
+dir <- DIR
 files <- list.files(path=dir, pattern='.csv', full.names=TRUE)
 length(files)
 
@@ -67,25 +138,29 @@ crohnsData_MASTER <- data.frame()
 for (file in files) {
   trial <-read_csv(file=file) %>%
     # as.character
-    mutate_at(.vars=c('ID','TRIAL','DRUG','SEX','HxOfTNFi','STEROID','IMMUNOMOD','LOC.ILEAL',
-                      'RACE','ETHNIC','LOC.COLON','SMOKING','CURR.FISTULA','PERIANAL','CURR.PRIOR.STRICTURE'), 
+    mutate_at(.vars=c('ID','TRIAL','DRUG','SEX','HxOfTNFi','STEROID','IMMUNOMOD',
+                      'LOC.ILEAL','RACE','ETHNIC','LOC.COLON','SMOKING','CURR.FISTULA',
+                      'PERIANAL','CURR.PRIOR.STRICTURE'), 
               ~ as.character(.x)) %>% 
     # as.double
-    mutate_at(.vars=c('AGE','BMI','CRP..mgL','HEIGHT..cm','WEIGHT..kg','DURATION','ALBUMIN..gL'), ~ as.double(.x)) %>% 
+    mutate_at(.vars=c('AGE','BMI','CRP..mgL','HEIGHT..cm','WEIGHT..kg','DURATION',
+                      'ALBUMIN..gL'), ~ as.double(.x)) %>% 
     mutate_at(vars(contains('CDAI')), ~ as.double(.x))
   
   crohnsData_MASTER <- rbind(crohnsData_MASTER, trial)
   
+  # remove temporary data
   rm(trial)
 }
 
-#################################################################################################
+# -----------------------------------------------------------------------------
 
 # Impute NA -> No for categorical vars (IMMUNOMOD, STEROID, HxOfTNFi, LOC.ILEAL)
 crohnsData_MASTER <- crohnsData_MASTER %>%
   # categorical variables - change NA to No
-  mutate(across(c(IMMUNOMOD, STEROID, HxOfTNFi, LOC.ILEAL, LOC.COLON, PERIANAL, CURR.FISTULA, CURR.PRIOR.STRICTURE), ~ replace_na(.x, 'No'))) %>% 
-  # categorical varialbes -> binary numeric
+  mutate(across(c(IMMUNOMOD, STEROID, HxOfTNFi, LOC.ILEAL, LOC.COLON, PERIANAL, 
+                  CURR.FISTULA, CURR.PRIOR.STRICTURE), ~ replace_na(.x, 'No'))) %>% 
+  # categorical variables -> binary numeric
   mutate(IMMUNOMOD    = if_else(IMMUNOMOD=='Yes',1,0)) %>% 
   mutate(STEROID      = if_else(STEROID=='Yes',1,0)) %>%
   mutate(HxOfTNFi     = if_else(HxOfTNFi=='Yes',1,0)) %>%
@@ -102,21 +177,21 @@ crohnsData_MASTER <- crohnsData_MASTER %>%
   mutate(Race_White   = if_else(RACE=='WHITE',1,0)) %>% 
   mutate(Ethnicity_Hispanic = if_else(ETHNIC=='HISPANIC OR LATINO',1,0))
 
-write.csv(crohnsData_MASTER,
-          file='G:/Shan/Week 8 Identification/CombinedTrials/crohnsData_MASTER.csv',
-          row.names=FALSE)
+# Save as crohnsData_MASTER.csv
 
-#################################################################################################
+# -----------------------------------------------------------------------------
 
+# Count (N participants) by trial
 crohnsData_MASTER %>% 
   group_by(TRIAL) %>% 
   dplyr::summarize(N = n())
 
-#################################################################################################
+# -----------------------------------------------------------------------------
 
-# Missingness for MASTER
+#  Missingness for MASTER
+
 crohnsData_MASTER %>% 
-  # find those who don't have any cdai measurements btw weeks 1-8
+  # find those who don't have any cdai measurements between weeks 1-8
   mutate(WK1_WK8_NA = if_else(is.na(CDAI_WEEK1) & 
                               is.na(CDAI_WEEK2) & 
                               is.na(CDAI_WEEK3) & 
@@ -129,11 +204,11 @@ crohnsData_MASTER %>%
   group_by(TRIAL) %>%
   summarise(across(everything(), ~sum(is.na(.))))
 
-#################################################################################################
+################################################################################
 
-## MASTER -> Week 8 Data
+## MASTER -> Week 8 Data (primary endpoint)
 
-# Isolate patients with no cdai data btw weeks 1-8
+# Isolate patients with no cdai data between weeks 1-8
 id_na <- crohnsData_MASTER %>%
   select(ID, CDAI_WEEK1:CDAI_WEEK8) %>%
   filter_at(vars(-ID), ~is.na(.)) %>%
@@ -142,7 +217,7 @@ id_na <- crohnsData_MASTER %>%
 crohnsData_wk8 <- crohnsData_MASTER %>%
   # remove patients with no cdai baseline
   filter(!is.na(CDAI_BASELINE)) %>%
-  # remove patients with no cdai data btw weeks 1-8
+  # remove patients with no cdai data between weeks 1-8
   anti_join(., id_na) %>% 
   # select important columns
   mutate(CDAI_REDUCTION = CDAI_BASELINE - CDAIL_WEEK8, na.rm=T) %>% 
@@ -158,11 +233,9 @@ crohnsData_wk8 <- crohnsData_MASTER %>%
 crohnsData_MASTER %>% nrow()
 crohnsData_wk8 %>% nrow()
 
-write.csv(crohnsData_wk8,
-          file='G:/Shan/Week 8 Identification/CombinedTrials/crohnsData_wk8.csv',
-          row.names=FALSE)
+# Save as crohnsData_wk8.csv 
 
-#################################################################################################
+# -----------------------------------------------------------------------------
 
 # Missingness for wk8
 print.data.frame( 
@@ -172,7 +245,7 @@ print.data.frame(
   summarise(across(everything(), ~sum(is.na(.)))) 
   )
 
-#################################################################################################
+# -----------------------------------------------------------------------------
 
 # N Active
 dim(crohnsData_wk8 %>% filter(TRTGRP == 'Active'))
@@ -194,7 +267,7 @@ crohnsData_wk8 %>%
   group_by(TRTGRP) %>%
   summarise(across(everything(), ~sum(is.na(.))))
 
-#################################################################################################
+################################################################################
 
 ## Summary of Categorical Variables
 
@@ -203,15 +276,13 @@ summaryTable <- crohnsData_wk8 %>%
   group_by(TRIAL, TRTGRP) %>% 
   summarize_all(mean)
 
-write.csv(summaryTable,
-          file='G:/Shan/Week 8 Identification/Tables/CovariateSummaryByStudy.csv',
-          row.names=FALSE)
-
 print.data.frame(summaryTable)
 
-#################################################################################################
+# Save as CovariateSummaryByStudy.csv
 
-## Summary for study outcomes (Response, Remission, Endpoint)
+# -----------------------------------------------------------------------------
+
+## Summary for study outcomes: Response, Remission, Endpoint
 
 summaryTable <- crohnsData_wk8 %>%
   mutate(REMISSION = if_else(CDAIL_WEEK8    <= 150,    1, 0)) %>%
@@ -223,13 +294,11 @@ summaryTable <- crohnsData_wk8 %>%
             Remission = round(sum(REMISSION)/n(),3),
             Endpoint = round(sum(ENDPOINT)/n(),3))
 
-write.csv(summaryTable,
-          file='G:/Shan/Week 8 Identification/Tables/OutcomeSummaryByStudy.csv',
-          row.names=FALSE)
-
 print.data.frame(summaryTable)
 
-#################################################################################################
+# Save as OutcomeSummaryByStudy.csv
+
+################################################################################
 
 # Missingness Heatmap
 
@@ -247,7 +316,8 @@ miss_data <- crohnsData_wk8 %>%
   rename('Immunomod Use'=IMMUNOMOD) %>%
   rename('Ileal Disease'=LOC.ILEAL) %>% 
   rename('Week 8 CDAI'=CDAI_WEEK8) %>% 
-  group_by(TRIAL) %>% naniar::miss_var_summary() %>% ungroup() %>% #naniar::miss_var_summary() returns n of missing and pct of missing
+  #naniar::miss_var_summary() returns n, pct of missing
+  group_by(TRIAL) %>% naniar::miss_var_summary() %>% ungroup() %>% 
   mutate(variable = factor(variable, levels=levels.x)) %>%
   mutate(TRIAL = factor(TRIAL, levels=rev(levels.y)))
 
@@ -260,11 +330,11 @@ p1 <- ggplot(miss_data, aes(x = TRIAL, y = variable, fill = pct_miss)) +
         axis.title.y = element_blank()) + 
   coord_flip()
 
-ggsave(filename = "G:/Shan/Week 8 Identification/Figures/MissingnessSummaryByStudy.pdf",
-       plot = p1, height = 5, width = 7)
 p1
 
-#################################################################################################
+# Save as MissingnessSummaryByStudy.pdf
+
+################################################################################
 
 ## Missingness tables
 
@@ -272,17 +342,15 @@ pctMissing <- miss_data %>%
   select(-n_miss) %>% 
   pivot_wider(names_from='variable', values_from='pct_miss')
 
-write_csv(pctMissing,
-          file = "G:/Shan/Week 8 Identification/Tables/PctMissingSummaryByStudy.csv")
+# Save as PctMissingSummaryByStudy.csv
 
 nMissing <- miss_data %>% 
   select(-pct_miss) %>% 
   pivot_wider(names_from='variable', values_from='n_miss')
 
-write_csv(nMissing,
-          file = "G:/Shan/Week 8 Identification/Tables/nMissingSummaryByStudy.csv")
+# Save as nMissingSummaryByStudy.csv
 
-#################################################################################################
+################################################################################
 
 ## LVCF Evaluation
 
@@ -316,9 +384,9 @@ crohnsData_wk8 %>%
   filter(!is.na(CDAI_WEEK2)) %>% # 90  LVCF from week 2
   nrow()
 
-#################################################################################################
+################################################################################
 
-# ## Missing value imputation for numerical variables
+## Missing value imputation for numerical variables
 # * 360  CDAI_WEEK8  = LVCF imputation 
 # *  80  CRP..mgL    = median imputation by trial
 # *   5  BMI         = median imputation by trial
@@ -347,11 +415,9 @@ crohnsData_wk8_imputed <- crohnsData_wk8 %>%
          CDAI_REDUCTION, CDAIL_WEEK8,                                      # Y, week 8 reference
          CDAI_WEEK1:CDAI_WEEK8)                                            # original cdai data
 
-write.csv(crohnsData_wk8_imputed,
-          file='G:/Shan/Week 8 Identification/CombinedTrials/crohnsData_wk8_imputed.csv',
-          row.names=FALSE)
+# Save as crohnsData_wk8_imputed.csv
 
-#################################################################################################
+################################################################################
 
 ## Characteristics Table 1
 
@@ -413,4 +479,4 @@ table1(~ TRTGRP + AGE + SEX.FEMALE + BMI + CDAI_BASELINE + CRP..mgL + HxOfTNFi +
        render.categorical= my.render.cat,
        droplevels = T)
 
-#################################################################################################
+################################################################################
